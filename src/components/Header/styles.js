@@ -21,3 +21,18 @@ export const BasketContainer = styled.TouchableOpacity`
   height: 24px;
   width: 24px;
 `;
+
+export const ItemCount = styled.Text`
+  background: #7159c1;
+  color: #fff;
+  min-width: 20px;
+  min-height: 20px;
+  font-size: 13px;
+  padding: 2px;
+  border-radius: 12px;
+  position: absolute;
+  text-align: center;
+  top: -11px;
+  right: -11px;
+  overflow: hidden;
+`;

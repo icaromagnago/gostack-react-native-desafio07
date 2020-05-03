@@ -65,3 +65,36 @@ export const ProductSubtotal = styled.Text`
   text-align: right;
   flex: 1;
 `;
+
+export const ProductTotal = styled.View`
+  margin-top: 30px;
+`;
+
+export const ProductTotalText = styled.Text`
+  text-align: center;
+  color: #999;
+  font-weight: bold;
+`;
+
+export const ProductTotalAmount = styled.Text`
+  text-align: center;
+  margin-top: 5px;
+  margin-bottom: 30px;
+  font-weight: bold;
+  font-size: 32px;
+`;
+
+export const OrderButton = styled.TouchableOpacity.attrs({
+  activeOpacity: 0.8,
+})`
+  background: #7159c1;
+  border-radius: 4px;
+  padding: 12px;
+`;
+
+export const OrderButtonText = styled.Text`
+  text-align: center;
+  color: #fff;
+  font-weight: bold;
+  font-size: 14px;
+`;

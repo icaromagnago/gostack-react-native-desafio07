@@ -1,7 +1,11 @@
 /* eslint-disable react/state-in-constructor */
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import api from '../../services/api';
+
+import * as CartActions from '../../store/module/cart/action';
 
 import { formatPrice } from '../../util/format';
 
@@ -18,7 +22,7 @@ import {
   ProductAmountText,
 } from './styles';
 
-export default class Home extends Component {
+class Home extends Component {
   state = {
     products: [],
   };
@@ -34,8 +38,18 @@ export default class Home extends Component {
     this.setState({ products: data });
   }
 
+  handleAdd = (product) => {
+    const { navigation } = this.props;
+    const { addToCart } = this.props;
+
+    addToCart(product);
+
+    navigation.navigate('Cart');
+  };
+
   render() {
     const { products } = this.state;
+    const { amount } = this.props;
     return (
       <Container>
         <List
@@ -49,9 +63,11 @@ export default class Home extends Component {
               <AddButton>
                 <ProductAmount>
                   <Icon name="add-shopping-cart" size={24} color="#fff" />
-                  <ProductAmountText>0</ProductAmountText>
+                  <ProductAmountText>{amount[item.id] || 0}</ProductAmountText>
                 </ProductAmount>
-                <AddButtonText>ADICIONAR</AddButtonText>
+                <AddButtonText onPress={() => this.handleAdd(item)}>
+                  ADICIONAR
+                </AddButtonText>
               </AddButton>
             </Product>
           )}
@@ -60,3 +76,16 @@ export default class Home extends Component {
     );
   }
 }
+
+const mapStateToProps = (state) => ({
+  amount: state.cart.reduce((amount, product) => {
+    amount[product.id] = product.amount;
+
+    return amount;
+  }, {}),
+});
+
+const mapDispatchToProps = (dispatch) =>
+  bindActionCreators(CartActions, dispatch);
+
+export default connect(mapStateToProps, mapDispatchToProps)(Home);

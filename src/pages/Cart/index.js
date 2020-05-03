@@ -1,6 +1,11 @@
 import React from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { View } from 'react-native';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+
+import * as CartActions from '../../store/module/cart/action';
+
+import { formatPrice } from '../../util/format';
 
 import {
   Container,
@@ -16,40 +21,82 @@ import {
   ProductControlButton,
   ProductAmount,
   ProductSubtotal,
+  ProductTotal,
+  ProductTotalText,
+  ProductTotalAmount,
+  OrderButton,
+  OrderButtonText,
 } from './styles';
 
-export default function Cart() {
+function Cart({ cart, removeFromCart, updateAmount, total }) {
+  function increment(product) {
+    updateAmount(product.id, product.amount + 1);
+  }
+
+  function decrement(product) {
+    updateAmount(product.id, product.amount - 1);
+  }
+
   return (
     <Container>
       <Products>
-        <Product>
-          <ProductInfo>
-            <ProductImage
-              source={{
-                uri:
-                  'https://rocketseat-cdn.s3-sa-east-1.amazonaws.com/modulo-redux/tenis1.jpg',
-              }}
-            />
-            <ProductDescription>
-              <ProductTitle>Tênis de Caminhada Leve Confortável</ProductTitle>
-              <ProductPrice>179.9</ProductPrice>
-            </ProductDescription>
-            <ProductDelete>
-              <Icon name="delete-forever" size={24} color="#7159c1" />
-            </ProductDelete>
-          </ProductInfo>
-          <ProductControls>
-            <ProductControlButton>
-              <Icon name="add-circle-outline" size={24} color="#7159c1" />
-            </ProductControlButton>
-            <ProductAmount value="2" />
-            <ProductControlButton>
-              <Icon name="remove-circle-outline" size={24} color="#7159c1" />
-            </ProductControlButton>
-            <ProductSubtotal>359.8</ProductSubtotal>
-          </ProductControls>
-        </Product>
+        {cart.map((product) => (
+          <Product key={String(product.id)}>
+            <ProductInfo>
+              <ProductImage
+                source={{
+                  uri: product.image,
+                }}
+              />
+              <ProductDescription>
+                <ProductTitle>{product.title}</ProductTitle>
+                <ProductPrice>{product.priceFormatted}</ProductPrice>
+              </ProductDescription>
+
+              <ProductDelete onPress={() => removeFromCart(product.id)}>
+                <Icon name="delete-forever" size={24} color="#7159c1" />
+              </ProductDelete>
+            </ProductInfo>
+
+            <ProductControls>
+              <ProductControlButton onPress={() => decrement(product)}>
+                <Icon name="remove-circle-outline" size={24} color="#7159c1" />
+              </ProductControlButton>
+              <ProductAmount value={String(product.amount)} />
+              <ProductControlButton onPress={() => increment(product)}>
+                <Icon name="add-circle-outline" size={24} color="#7159c1" />
+              </ProductControlButton>
+
+              <ProductSubtotal>{product.subtotal}</ProductSubtotal>
+            </ProductControls>
+          </Product>
+        ))}
+
+        <ProductTotal>
+          <ProductTotalText>TOTAL</ProductTotalText>
+          <ProductTotalAmount>{total}</ProductTotalAmount>
+          <OrderButton>
+            <OrderButtonText>FINALIZAR PEDIDO</OrderButtonText>
+          </OrderButton>
+        </ProductTotal>
       </Products>
     </Container>
   );
 }
+
+const mapStateToProps = (state) => ({
+  cart: state.cart.map((product) => ({
+    ...product,
+    subtotal: formatPrice(product.price * product.amount),
+  })),
+  total: formatPrice(
+    state.cart.reduce((total, product) => {
+      return total + product.price * product.amount;
+    }, 0)
+  ),
+});
+
+const mapDispatchToProps = (dispatch) =>
+  bindActionCreators(CartActions, dispatch);
+
+export default connect(mapStateToProps, mapDispatchToProps)(Cart);
