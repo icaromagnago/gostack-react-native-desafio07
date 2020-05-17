@@ -41,6 +41,8 @@ function* addToCart({ id }) {
 
     yield put(addToCartSuccess(data));
   }
+
+  NavigationService.navigate('Cart');
 }
 
 function* updateAmount({ id, amount }) {

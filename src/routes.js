@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
@@ -9,13 +9,13 @@ import Header from './components/Header';
 
 const Stack = createStackNavigator();
 
-function Routes() {
+function Routes(props, ref) {
   return (
-    <NavigationContainer>
+    <NavigationContainer ref={ref}>
       <Stack.Navigator
         initialRouteName="Home"
         screenOptions={{
-          header: (props) => <Header {...props} />,
+          header: () => <Header {...props} />,
           headerBackTitleVisible: false,
           headerTintColor: '#FFF',
           headerStyle: { backgroundColor: '#141419' },
@@ -29,4 +29,4 @@ function Routes() {
   );
 }
 
-export default Routes;
+export default forwardRef(Routes);
